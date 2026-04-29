@@ -1,56 +1,50 @@
 # Laboratory-Work-4-Activity-Improving-CNN-Performance-Using-Regularization
 
-Google Collab Link: https://colab.research.google.com/drive/1EQCW6wQ19eJqolGaT1uAKKhc_mJanKuD?usp=sharing
+Google Collab Link: https://colab.research.google.com/drive/1Bip9bLgwB81Yvu3vgEa5aNldf3OZj_Ji?usp=sharing
 
 # Activity 2 Part 7 Analysis (Grad-CAM Interpretation)
 
-The Grad-CAM heatmap shows a nearly uniform green activation across the entire image with no concentrated hotspot on the plant. The overlay confirms this — the activation is scattered throughout the background (shown by the widespread magenta coloring) rather than focused on the plant's distinctive features like its leaves, shape, or structure.
-This corresponds to the "Scattered heatmap = Weak feature learning" case. The model is not clearly identifying what makes the plant unique — it is responding to broad, distributed patterns across the whole image rather than locking onto the object of interest.
-Possible reasons:
+Grad-CAM Results Interpretation
 
-The CNN filters (especially with only 16→32→64 channels) may not have learned strong enough discriminative features
-No BatchNormalization in the baseline model means feature maps can be noisy
-The background of the image is visually complex, and the model may be picking up on background cues instead of the plant itself
-
-What this means going forward (Activity 3):
-Adding BatchNormalization, deeper filters (32→64→128), and stronger data augmentation should help the model focus on the actual plant features — which you can verify by running Grad-CAM again after retraining and checking if the heatmap becomes more concentrated on the plant itself.
+Based on the Grad-CAM heatmap, the model shows **weak and scattered feature learning**. The heatmap is almost entirely uniform red/orange across the whole image, indicating that the model is not focusing on any specific region but rather activating broadly across the entire input. In the overlay, while there is some partial attention toward the flower petals, the activation is still spread across the background, suggesting that the model is somewhat confused about which features are most relevant for classification. This is consistent with the model's relatively low validation accuracy of ~76.7%, meaning it has not yet fully learned to isolate and focus on the distinguishing features of each plant species. Further improvements such as more training epochs, additional images per class, or transfer learning would help the model develop sharper and more focused feature attention.
 
 # PART 4: Compare Results (Before vs After)
-<img width="1440" height="600" alt="image" src="https://github.com/user-attachments/assets/0ea0577f-a61b-41e8-a266-07d96c950323" />
+<img width="901" height="369" alt="image" src="https://github.com/user-attachments/assets/b293cd58-f582-4635-9952-841343305afe" />
 
 # GUIDE QUESTIONS (Student Explanation & Reflection)
+
 A. Model Evaluation Analysis
 1. Weakest-performing classes based on the confusion matrix:
-Adelfa was the weakest in both models — baseline F1 of 0.61, improved F1 of only 0.49. Katakataka (0.69), Red_Powder_Puff (0.71), and Celosia (0.72) were also consistently weak. The confusion matrix shows Adelfa being misclassified across many different classes, suggesting high visual ambiguity.
-2. How Precision, Recall, and F1 varied across classes:
-Blue_Pea_Vine had perfect precision (1.00) in both models, while Purple_Heart achieved the highest F1 (0.94) in the improved model. In contrast, Adelfa had the lowest scores across all three metrics. This variation reflects how visually distinct each plant class is — classes with unique colors or shapes scored higher.
-3. What low recall indicates:
-Low recall means the model is missing actual instances of that class — it fails to identify them even when they are present. For example, Adelfa's recall of 0.50 in the improved model means it correctly found only half of all actual Adelfa samples, misclassifying the rest as other plants.
-4. How AUC reflects performance compared to accuracy:
-AUC measures how well the model distinguishes between classes across all classification thresholds, not just at one fixed threshold. The baseline AUC of 0.9576 means it was very good at ranking correct classes higher than incorrect ones, even though its accuracy was 83%. AUC is more reliable than accuracy alone because it is not affected by class imbalance.
+The weakest-performing classes were Adelfa Plant (F1-score of 0.40 and precision of only 0.41), Cupid Peperomia (F1-score of 0.55), and Copper Leaf (F1-score of 0.58). These classes had the most misclassifications in the confusion matrix, likely because their visual features — such as leaf shape and color — are similar to other plant species in the dataset.
+2. How Precision, Recall, and F1-score varied across classes:
+There was notable variation across the 20 classes. Classes like Aster Flower (precision 0.92), Purple Heart (0.94), and Blue Pea Vine (0.88) performed consistently well across all three metrics. In contrast, Adelfa Plant and Polka Dot showed imbalanced scores — for example, Polka Dot had a high recall of 0.91 but very low precision of 0.47, meaning it was over-predicting that class and misclassifying other plants as Polka Dot.
+3. What a low recall indicates:
+A low recall means the model is failing to correctly identify actual instances of that class — in other words, it is producing many false negatives. For example, Garden Croton had a recall of only 0.47, meaning the model missed more than half of the actual Garden Croton images and likely classified them as other species.
+4. How AUC score reflects performance compared to accuracy:
+While the improved model's accuracy dropped to 68.44% compared to the baseline's 89.60%, the AUC score remained strong at 0.9062 versus the baseline's 0.9735. This shows that AUC is a more reliable indicator of true model capability because it measures how well the model separates classes across all thresholds, regardless of class imbalance. The baseline's high accuracy was largely due to overfitting, while the improved model's AUC confirms it still has strong discriminative ability on unseen data.
 
-B. Model Improvement<br>
-  5. How data augmentation affected validation accuracy:<br>
-  - Data augmentation made the task harder for the model during training by randomly flipping, rotating, zooming, and adjusting images each epoch. This slowed convergence — the improved model only reached 69% training accuracy after 40 epochs versus the baseline's 89% after 15. However, augmentation reduces overfitting by preventing the model from memorizing fixed image patterns, which is why the gap between training and validation accuracy was smaller in the improved model.<br><br>
-  6. Why Batch Normalization is important in CNNs:<br>
-- Batch Normalization normalizes the output of each layer before passing it to the next. This stabilizes training by preventing activations from becoming too large or too small, allows higher learning rates, and speeds up convergence. It also acts as a mild regularizer, reducing the need for aggressive dropout.<br><br>
-7. The role of Dropout:<br>
-- Dropout randomly deactivates a percentage of neurons during each training step, forcing the network to learn redundant representations rather than relying on specific neurons. This directly prevents overfitting. The improved model used 0.4 dropout after the conv layers and 0.5 after the dense layer, which helped keep val accuracy closer to training accuracy.<br><br>
+B. Model Improvement<br><br>
+5. How data augmentation affected validation accuracy:<br>
+Data augmentation initially caused training accuracy to appear lower because the model was seeing harder, more varied versions of each image. However, it helped validation accuracy become more stable and consistent throughout training. In the accuracy curves, validation accuracy was frequently higher than training accuracy, which is a healthy sign that the model was generalizing rather than memorizing.<br><br>
+6. Why Batch Normalization is important in CNNs:<br>
+Batch Normalization normalizes the output of each convolutional layer before passing it to the next, which stabilizes and accelerates training. In this model, it helped the loss decrease more smoothly and consistently across all 20 epochs, preventing erratic gradient updates that can slow down or destabilize learning.<br><br>
+7. The role of Dropout in improving the model:<br>
+Dropout randomly deactivates a percentage of neurons during each training step, forcing the network to learn more robust and distributed feature representations rather than relying on specific neurons. In this model, dropout rates of 0.4 and 0.5 were applied, which significantly reduced the overfitting seen in the baseline model where training accuracy reached 98.26% while validation was already diverging.<br><br>
 8. How Early Stopping prevented overfitting:<br>
-- Early stopping monitored val loss every epoch and stopped training when it did not improve for 5 consecutive epochs, then restored the weights from the best epoch. This automatically prevented the model from continuing to train past its peak, which is exactly what happened in the baseline when overfitting began at epoch 13.<br><br>
+Early Stopping monitored the validation loss at each epoch and would have halted training automatically if it stopped improving for 5 consecutive epochs, restoring the best weights seen during training. In this case the model trained all 20 epochs since it kept improving, but the callback ensured that even if it had started to overfit beyond epoch 20, the best-performing version of the model would have been preserved.<br><br>
 
-C. Performance Comparison<br>
-9. What improvements were observed:<br>
-  - The improved model showed a smaller gap between training and validation accuracy (69.3% train vs 77.2% val) compared to the baseline (89.6% train vs 83.3% val). This indicates less overfitting. However, the overall validation accuracy decreased, which means the model needs more training time or a stronger architecture like transfer learning to surpass the baseline.<br><br>
-10. Which enhancement contributed most:<br>
-- Early stopping contributed most to generalization control, as it directly prevented the model from overfitting past its best checkpoint. BatchNormalization was the second most impactful, stabilizing training across 40 epochs which would otherwise have been very unstable.<br><br>
-11. Did the gap between training and validation accuracy decrease:<br>
-- Yes. The baseline had a 6.28% gap (89.58% train vs 83.30% val), while the improved model had a negative gap — val accuracy (77.16%) actually exceeded training accuracy (69.34%). This is a strong sign of reduced overfitting and shows that augmentation and regularization worked, even though the absolute accuracy was lower due to the model needing more epochs to fully converge.<br><br>
+C. Performance Comparison<br><br>
+9. Improvements observed after modifying the model:<br>
+The most notable improvement was in model generalization. The baseline model showed clear overfitting with a training accuracy of 98.26% and validation accuracy of 89.60%, with a large and growing gap between the two. The improved model brought training accuracy down to 64.40% and validation to 68.44%, with validation accuracy actually exceeding training accuracy throughout most of training — a clear sign of better generalization. The AUC score also remained high at 0.9062.<br><br>
+10. Which enhancement contributed most to improvement:<br>
+Data augmentation combined with Dropout contributed the most to reducing overfitting. The aggressive augmentation — which included horizontal and vertical flipping, rotation, zoom, and contrast variation — ensured the model was exposed to diverse versions of each image, while the higher dropout rates of 0.4 and 0.5 prevented the model from memorizing specific training examples. These two together are the primary reason validation accuracy consistently stayed close to or above training accuracy.<br><br>
+11. Whether the gap between training and validation accuracy decreased:<br>
+Yes, the gap decreased significantly and even reversed. In the baseline model, training accuracy far exceeded validation accuracy, which is a classic sign of overfitting. In the improved model, validation accuracy was consistently higher than training accuracy throughout most of the 20 epochs, as clearly visible in the accuracy improvement curve. This confirms that the enhancements successfully addressed the overfitting problem.<br><br>
 
-D. Explainability (Grad-CAM)<br>
-12. How Grad-CAM helped understand model predictions:<br>
-- Grad-CAM revealed which regions of the input image the model focused on when making its classification decision. By visualizing the gradient-weighted activations of the last convolutional layer, it showed whether the model was attending to the plant itself or to irrelevant background areas.<br><br>
-13. Did the improved model focus on more relevant regions:<br>
-- Based on the baseline Grad-CAM results, the heatmap was scattered and uniform across the entire image, indicating weak feature learning. Running Grad-CAM on the improved model after retraining would be needed to confirm improvement. However, since the improved model uses BatchNormalization and deeper filters (32→64→128), its feature maps are more stable and likely to produce more focused activations — this can be verified by re-running Activity 2 on the improved model.<br><br>
+D. Explainability (Grad-CAM Integration)<br><br>
+12. How Grad-CAM helped in understanding model predictions:<br>
+Grad-CAM provided a visual explanation of which regions of the image the model focused on when making its prediction. Instead of treating the model as a black box, Grad-CAM generated a heatmap overlay on the original image that highlighted the areas with the highest activation, allowing us to understand whether the model was looking at the actual plant features or irrelevant background areas.<br><br>
+13. Whether the improved model focused on more relevant regions:<br>
+Based on the Grad-CAM overlay, the model showed partial focus on the flower petals of the test image, with some activation spread across the background as well. While not perfectly focused, this is an improvement over a randomly scattered heatmap, suggesting the model has begun learning some plant-specific features. However, the scattered activation still indicates there is room for further improvement, which aligns with the 68.44% validation accuracy.<br><br>
 14. Why explainability is important in real-world AI applications:<br>
-- In real-world applications like medical diagnosis, agriculture, or security, a model's decision must be trustworthy and transparent. If a model classifies a plant disease incorrectly and no one can explain why, it cannot be corrected. Grad-CAM and other XAI tools allow developers and users to verify that the model is learning the right features, catch bias or shortcuts the model may have learned, and build trust with end users who need to act on the model's predictions.
+Explainability is critical in real-world AI systems because it builds trust and accountability. In applications like plant disease detection, agricultural monitoring, or medical imaging, users and decision-makers need to understand why a model made a certain prediction before acting on it. A model that is accurate but unexplainable can be dangerous — for example, if it predicts the wrong plant species for a critical reason that goes undetected. Grad-CAM and similar tools help developers identify model weaknesses, catch bias, and ensure the model is learning the right features for the right reasons.
