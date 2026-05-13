@@ -10,20 +10,19 @@ Grad-CAM Results Interpretation
 Based on the Grad-CAM heatmap, the model shows **weak and scattered feature learning**. The heatmap is almost entirely uniform red/orange across the whole image, indicating that the model is not focusing on any specific region but rather activating broadly across the entire input. In the overlay, while there is some partial attention toward the flower petals, the activation is still spread across the background, suggesting that the model is somewhat confused about which features are most relevant for classification. This is consistent with the model's relatively low validation accuracy of ~76.7%, meaning it has not yet fully learned to isolate and focus on the distinguishing features of each plant species. Further improvements such as more training epochs, additional images per class, or transfer learning would help the model develop sharper and more focused feature attention.
 
 # PART 4: Compare Results (Before vs After)
-![Uploading image.png…](
-
+<img width="296" height="143" alt="image" src="https://github.com/user-attachments/assets/ff71c05a-f945-44dd-9118-d644d3ce5cda" />
 
 # GUIDE QUESTIONS (Student Explanation & Reflection)
 
 A. Model Evaluation Analysis
-1. Weakest-performing classes based on the confusion matrix:
-The weakest-performing classes were Adelfa Plant (F1-score of 0.40 and precision of only 0.41), Cupid Peperomia (F1-score of 0.55), and Copper Leaf (F1-score of 0.58). These classes had the most misclassifications in the confusion matrix, likely because their visual features — such as leaf shape and color — are similar to other plant species in the dataset.
-2. How Precision, Recall, and F1-score varied across classes:
-There was notable variation across the 20 classes. Classes like Aster Flower (precision 0.92), Purple Heart (0.94), and Blue Pea Vine (0.88) performed consistently well across all three metrics. In contrast, Adelfa Plant and Polka Dot showed imbalanced scores — for example, Polka Dot had a high recall of 0.91 but very low precision of 0.47, meaning it was over-predicting that class and misclassifying other plants as Polka Dot.
-3. What a low recall indicates:
+1. Weakest-performing classes based on the confusion matrix:<br>
+Based on the classification report, the weakest-performing classes were Adelfa (F1: 0.65), Garden Croton (F1: 0.67), and Katakataka (F1: 0.66). These classes share similar leaf shapes and colors with other ornamental plants, making them harder to distinguish.
+2. How Precision, Recall, and F1-score varied across classes:<br>
+High performers included Bluebell (F1: 0.95), Blue Pea Vine (F1: 0.92), and Purple Heart (F1: 0.91). Weaker classes like Adelfa (precision 0.64, recall 0.65) and Garden Croton (precision 0.51, recall 0.95) showed imbalanced scores — Garden Croton had very high recall but low precision, meaning the model over-predicted it.
+3. What a low recall indicates:<br>
 A low recall means the model is failing to correctly identify actual instances of that class — in other words, it is producing many false negatives. For example, Garden Croton had a recall of only 0.47, meaning the model missed more than half of the actual Garden Croton images and likely classified them as other species.
-4. How AUC score reflects performance compared to accuracy:
-While the improved model's accuracy dropped to 68.44% compared to the baseline's 89.60%, the AUC score remained strong at 0.9062 versus the baseline's 0.9735. This shows that AUC is a more reliable indicator of true model capability because it measures how well the model separates classes across all thresholds, regardless of class imbalance. The baseline's high accuracy was largely due to overfitting, while the improved model's AUC confirms it still has strong discriminative ability on unseen data.
+4. How AUC score reflects performance compared to accuracy:<br>
+The baseline model achieved 81.42% test accuracy with AUC 0.9590. The improved model reached 87.30% test accuracy with AUC 0.9797. While accuracy improved by 5.88%, AUC improved more consistently across all classes, confirming better overall class discrimination ability.
 
 B. Model Improvement<br><br>
 5. How data augmentation affected validation accuracy:<br>
@@ -37,11 +36,11 @@ Early Stopping monitored the validation loss at each epoch and would have halted
 
 C. Performance Comparison<br><br>
 9. Improvements observed after modifying the model:<br>
-The most notable improvement was in model generalization. The baseline model showed clear overfitting with a training accuracy of 98.26% and validation accuracy of 89.60%, with a large and growing gap between the two. The improved model brought training accuracy down to 64.40% and validation to 68.44%, with validation accuracy actually exceeding training accuracy throughout most of training — a clear sign of better generalization. The AUC score also remained high at 0.9062.<br><br>
+The baseline model had training accuracy 81.16% and test accuracy 81.42% with AUC 0.9590, showing signs of underfitting. The improved model achieved training accuracy 96.81% and test accuracy 87.30% with AUC 0.9797 — a clear improvement in both learning capacity and generalization.<br><br>
 10. Which enhancement contributed most to improvement:<br>
 Data augmentation combined with Dropout contributed the most to reducing overfitting. The aggressive augmentation — which included horizontal and vertical flipping, rotation, zoom, and contrast variation — ensured the model was exposed to diverse versions of each image, while the higher dropout rates of 0.4 and 0.5 prevented the model from memorizing specific training examples. These two together are the primary reason validation accuracy consistently stayed close to or above training accuracy.<br><br>
 11. Whether the gap between training and validation accuracy decreased:<br>
-Yes, the gap decreased significantly and even reversed. In the baseline model, training accuracy far exceeded validation accuracy, which is a classic sign of overfitting. In the improved model, validation accuracy was consistently higher than training accuracy throughout most of the 20 epochs, as clearly visible in the accuracy improvement curve. This confirms that the enhancements successfully addressed the overfitting problem.<br><br>
+The gap was partially reduced. The baseline had a small gap (81.16% train vs 81.42% test). The improved model showed a wider gap (96.81% train vs 87.30% test), indicating mild overfitting. However, EarlyStopping with restore_best_weights ensured the saved model reflected the best generalization point.<br><br>
 
 D. Explainability (Grad-CAM Integration)<br><br>
 12. How Grad-CAM helped in understanding model predictions:<br>
