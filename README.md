@@ -1,4 +1,4 @@
-# Laboratory-Work-4-Activity-Improving-CNN-Performance-Using-Regularization
+<img width="296" height="143" alt="image" src="https://github.com/user-attachments/assets/81c14b72-f405-4048-af48-d0bcceaf68bb" /># Laboratory-Work-4-Activity-Improving-CNN-Performance-Using-Regularization
 
 # Google Collab Link: https://colab.research.google.com/drive/1Bip9bLgwB81Yvu3vgEa5aNldf3OZj_Ji?usp=sharing
 # Good Model: https://colab.research.google.com/drive/1yIEG2he15AhLqo6j0Zbu9RJg2w2SS5-f?usp=sharing
@@ -10,7 +10,7 @@ Grad-CAM Results Interpretation
 Based on the Grad-CAM heatmap, the model shows **weak and scattered feature learning**. The heatmap is almost entirely uniform red/orange across the whole image, indicating that the model is not focusing on any specific region but rather activating broadly across the entire input. In the overlay, while there is some partial attention toward the flower petals, the activation is still spread across the background, suggesting that the model is somewhat confused about which features are most relevant for classification. This is consistent with the model's relatively low validation accuracy of ~76.7%, meaning it has not yet fully learned to isolate and focus on the distinguishing features of each plant species. Further improvements such as more training epochs, additional images per class, or transfer learning would help the model develop sharper and more focused feature attention.
 
 # PART 4: Compare Results (Before vs After)
-<img width="480" height="237" alt="image" src="https://github.com/user-attachments/assets/f9b8cb54-8066-4d62-8cbe-53c1ffd91cd7" />
+![Uploading image.png…](
 
 
 # GUIDE QUESTIONS (Student Explanation & Reflection)
